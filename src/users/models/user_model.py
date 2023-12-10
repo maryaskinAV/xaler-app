@@ -21,7 +21,7 @@ class UserManager(BaseUserManager):
         if password is not None:
             try:
                 validate_password(password)
-            except ValidationError as e:
+            except ValidationError:
                 raise ValueError({"password": _("Password can't be set. Update password and try again.")})
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
