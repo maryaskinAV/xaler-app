@@ -1,0 +1,55 @@
+version: "3.4"
+
+services:
+  xaler-db:
+    image: postgres:14-alpine
+    container_name: xaler-db
+    restart: always
+    volumes:
+      - xaler-db-data:/var/lib/postgresql/data/pgdata
+    ports:
+      - "127.0.0.1:5432:5432"
+    env_file:
+      - ./.env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+  xaler-redis:
+    image: redis:latest
+    container_name: xaler-redis
+    restart: always
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - xaler-redis-data:/data
+
+  xaler-app:
+    build:
+      context: .
+      dockerfile: _configs/app/Dockerfile
+    container_name: xaler-app
+    command: bash run.sh
+    env_file: .env
+    environment:
+      WAIT-HOSTS: xaler-redis, xaler-db
+    volumes:
+      - ./src:/home/xaler/app
+      - ./src/media:/home/xaler/app/media:rw
+    ports:
+      - "8000:8000"
+    tty: true
+    restart: on-failure
+    depends_on:
+      - xaler-db
+      - xaler-redis
+
+
+volumes:
+  xaler-db-data:
+  xaler-redis-data:
+
+networks:
+  xaler-net:
+    external: true
+
+

@@ -1,0 +1,9 @@
+from .core_settings import env, BASE_DIR
+
+DEBUG = True
+
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
